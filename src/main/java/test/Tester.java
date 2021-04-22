@@ -4,29 +4,29 @@ import com.google.common.base.Strings;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.function.Function;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Properties;
+import java.util.StringJoiner;
 
 public class Tester {
 
 
     private static final String SUBJECT = "Test";
     private static final String BODY = "Test body Test body Test body Test body Test body Test body Test body";
-    private static final String EMAIL = "tarabukintestoviy@gmail.com";
-    private static final String PASSWORD = "password123qwert";
+    private String EMAIL = "lmfaowrongemail";
+    private String PASSWORD = "hertebeanepassword";
 
     private static final String WELCOME_TEXT = "Добро пожаловать!";
     private static final String NEW_MAIL_TEXT = "Новое сообщение";
     private static final String MAIL_SENT_TEXT = "Письмо отправлено.";
     private static final String MAIL_DELETED_TEXT = "Цепочка помещена в корзину.";
 
-    private static final String WRONG_EMAIL_ERROR = "Не удалось найти аккаунт Google.";
-    private static final String WRONG_PASS_ERROR = "Неверный пароль. Повторите попытку или нажмите на ссылку \"Забыли пароль?\", чтобы сбросить его.";
+    private static final String SEND_TO_MAIL = "tarabukintestoviy@gmail.com";
 
     private ChromeDriver driver;
 
@@ -38,7 +38,20 @@ public class Tester {
     }
 
     public void init() {
+        initLoginPass();
         driver = new ChromeDriver(new ChromeCustomBuilder().build());
+    }
+
+    private void initLoginPass() {
+        try {
+            InputStream is = ClassLoader.getSystemResourceAsStream("settings.properties");
+            Properties props = new Properties();
+            props.load(is);
+            EMAIL = props.getProperty("login");
+            PASSWORD = props.getProperty("password");
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex.getMessage());
+        }
     }
 
     public boolean openPage() {
@@ -84,9 +97,27 @@ public class Tester {
         WebElement toField = driver.findElement(By.cssSelector("textarea[name='to']"));
         WebElement subjectField = driver.findElement(By.cssSelector("input[name='subjectbox']"));
         WebElement bodyField = driver.findElement(By.cssSelector("div[aria-label='Тело письма']"));
-        toField.sendKeys(EMAIL);
+        WebElement attachmentField = driver.findElement(By.cssSelector("input[name='Filedata']"));
+        toField.sendKeys(SEND_TO_MAIL);
         subjectField.sendKeys(SUBJECT);
         bodyField.sendKeys(BODY);
+
+        StringJoiner attachments = new StringJoiner(" \n ");
+        attachments.add(getFileFromResource("test_att.txt").getPath());
+        attachments.add(getFileFromResource("test_pic.jpg").getPath());
+        attachmentField.sendKeys(attachments.toString());
+
+        WebElement linkButton = driver.findElement(By.cssSelector("div[command='+link']"));
+        linkButton.click();
+        wait.until(driver -> driver.getPageSource().contains("Изменить ссылку"));
+        WebElement linkTextInput = driver.findElement(By.cssSelector("input[id='linkdialog-text']"));
+        WebElement linkInput = driver.findElement(By.cssSelector("input[id='linkdialog-onweb-tab-input']"));
+        linkTextInput.sendKeys("look at me, i'm a link!");
+        linkInput.sendKeys("https://symbolics.com/");
+        WebElement okButton = driver.findElement(By.cssSelector("button[name='ok']"));
+        okButton.click();
+        wait.until(driver -> !driver.getPageSource().contains("Изменить ссылку"));
+
         WebElement sendConfirmButton = driver.findElement(By.cssSelector("div[role='button'][class='T-I J-J5-Ji aoO v7 T-I-atl L3']"));
         sendConfirmButton.click();
         WebDriverWait wait1 = new WebDriverWait(driver, 3);
@@ -179,7 +210,7 @@ public class Tester {
         }
     }
 
-    private void takeScreenshot() {
+    public void takeScreenshot() {
         TakesScreenshot prntScr = (TakesScreenshot) driver;
         File scrFile = prntScr.getScreenshotAs(OutputType.FILE);
         File curDirFile = new File(".\\screenshot\\error.png");
@@ -188,5 +219,10 @@ public class Tester {
         } catch (IOException ex) {
             throw new IllegalStateException(ex.getMessage());
         }
+    }
+
+    private File getFileFromResource(String name) {
+        URL classLoader = ClassLoader.getSystemResource(name);
+        return new File(classLoader.getFile());
     }
 }

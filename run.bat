@@ -1,1 +1,1 @@
-mvn test
+mvn test -Demail.login=tarabukintestoviy@gmail.com -Demail.password=password123qwert
