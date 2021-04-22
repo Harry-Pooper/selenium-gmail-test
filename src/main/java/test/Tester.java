@@ -7,6 +7,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -18,8 +19,8 @@ public class Tester {
 
     private static final String SUBJECT = "Test";
     private static final String BODY = "Test body Test body Test body Test body Test body Test body Test body";
-    private String EMAIL = "lmfaowrongemail";
-    private String PASSWORD = "hertebeanepassword";
+    private String EMAIL;
+    private String PASSWORD;
 
     private static final String WELCOME_TEXT = "Добро пожаловать!";
     private static final String NEW_MAIL_TEXT = "Новое сообщение";
@@ -106,6 +107,18 @@ public class Tester {
         attachments.add(getFileFromResource("test_att.txt").getPath());
         attachments.add(getFileFromResource("test_pic.jpg").getPath());
         attachmentField.sendKeys(attachments.toString());
+
+        WebElement picButton = driver.findElement(By.cssSelector("div[command='image']"));
+        picButton.click();
+        WebElement iframe = driver.findElement(By.xpath("//iframe[@allow='camera']"));
+        driver.switchTo().frame(iframe);
+        WebElement upload = driver.findElement(By.cssSelector("div[id=':7']"));
+        upload.click();
+        wait.until(driver -> (driver.findElements(By.cssSelector("input[type='file'][accept='image/jpeg,image/gif,image/png,image/bmp,image/webp']")).size() != 0));
+        WebElement picInput = driver.findElement(By.cssSelector("input[type='file'][accept='image/jpeg,image/gif,image/png,image/bmp,image/webp']"));
+        picInput.sendKeys(getFileFromResource("test_pic.jpg").getPath());
+        driver.switchTo().defaultContent();
+        wait.until(driver -> (driver.findElements(By.xpath("//iframe[@allow='camera']")).size() == 0));
 
         WebElement linkButton = driver.findElement(By.cssSelector("div[command='+link']"));
         linkButton.click();

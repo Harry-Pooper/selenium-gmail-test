@@ -27,8 +27,7 @@ public class ChromeTest {
     public void test() {
         try {
             try {
-                boolean openPage = tester.openPage();
-                if (!openPage) {
+                if (!tester.openPage()) {
                     fail("openPage failed");
                 }
                 System.out.println("openPage success");
@@ -37,8 +36,7 @@ public class ChromeTest {
                 fail("openPage failed unexpectedly\n" + ex.getMessage());
             }
             try {
-                boolean login = tester.login();
-                if (!login) {
+                if (!tester.login()) {
                     fail("Login failed");
                 }
                 System.out.println("Login success");
@@ -47,8 +45,7 @@ public class ChromeTest {
                 fail("Login failed unexpectedly\n" + ex.getMessage());
             }
             try {
-                boolean sendMail = tester.sendMailCheck();
-                if (!sendMail) {
+                if (!tester.sendMailCheck()) {
                     fail("Send mail failed");
                 }
                 System.out.println("Send mail success");
@@ -57,8 +54,7 @@ public class ChromeTest {
                 fail("Send mail failed unexpectedly\n" + ex.getMessage());
             }
             try {
-                boolean openMail = tester.openMail();
-                if (!openMail) {
+                if (!tester.openMail()) {
                     fail("Open mail failed");
                 }
                 System.out.println("Open mail success");
