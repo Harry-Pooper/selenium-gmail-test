@@ -77,7 +77,8 @@ public class Tester {
             return false;
         }
         element = driver.findElement(By.cssSelector("input[name='password']"));
-        element.sendKeys(PASSWORD);
+        element.sendKeys("3651613631");
+        // element.sendKeys(PASSWORD);
         WebElement button1 = driver.findElement(By.cssSelector("button[jsname='LgbsSe']"));
         button1.click();
         wait.until(driver -> (driver.findElements(By.cssSelector("div[id='initialView'][aria-busy='true']")).size() == 0
@@ -226,9 +227,11 @@ public class Tester {
     public void takeScreenshot() {
         TakesScreenshot prntScr = (TakesScreenshot) driver;
         File scrFile = prntScr.getScreenshotAs(OutputType.FILE);
-        File curDirFile = new File(".\\screenshot\\error.png");
+        File curDirPngFile = new File(".\\screenshot\\error.png");
+        File curDirHtmlFile = new File(".\\screenshot\\error.html");
         try {
-            FileUtils.copyFile(scrFile, curDirFile);
+            FileUtils.copyFile(scrFile, curDirPngFile);
+            FileUtils.write(curDirHtmlFile, driver.getPageSource(), "UTF-8");
         } catch (IOException ex) {
             throw new IllegalStateException(ex.getMessage());
         }
