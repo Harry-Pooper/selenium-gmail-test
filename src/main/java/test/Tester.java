@@ -77,8 +77,7 @@ public class Tester {
             return false;
         }
         element = driver.findElement(By.cssSelector("input[name='password']"));
-        element.sendKeys("3651613631");
-        // element.sendKeys(PASSWORD);
+        element.sendKeys(PASSWORD);
         WebElement button1 = driver.findElement(By.cssSelector("button[jsname='LgbsSe']"));
         button1.click();
         wait.until(driver -> (driver.findElements(By.cssSelector("div[id='initialView'][aria-busy='true']")).size() == 0
